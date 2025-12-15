@@ -162,3 +162,7 @@ jobs:
       - name: Stop Docker Compose services
         if: always()
         run: docker compose down -v
+
+      - name: Clear Cache Docker Compose
+        if: always()
+        run: docker system prune -f --volumes
