@@ -8,6 +8,7 @@ import { ContactModule } from './contact/contact.module';
 import { ProfileModule } from './profile/profile.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { HealthModule } from './health/health.module';
 import { Project } from './projects/entities/project.entity';
 import { BlogPost } from './blog/entities/blog-post.entity';
 import { ContactMessage } from './contact/entities/contact-message.entity';
@@ -54,6 +55,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     BlogModule,
     ContactModule,
     ProfileModule,
+    HealthModule,
   ],
   providers: [
     {

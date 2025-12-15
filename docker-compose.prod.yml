@@ -3,39 +3,37 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: portfolio_postgres
-    restart: unless-stopped
+    container_name: portfolio_postgres_prod
+    restart: always
     environment:
-      POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_DATABASE:-portfolio_db}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - fardin_rahman_portfolio_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: portfolio_app
-    restart: unless-stopped
+    image: ${DOCKER_USERNAME}/fardin-rahman-portfolio-server:latest
+    container_name: portfolio_app_prod
+    restart: always
     ports:
       - "${PORT:-3000}:3000"
     environment:
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: production
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_DATABASE: ${DB_DATABASE:-portfolio_db}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
     depends_on:
@@ -55,4 +53,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres_data_prod:

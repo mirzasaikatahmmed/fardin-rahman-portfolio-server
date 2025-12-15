@@ -9,6 +9,8 @@ A comprehensive backend API for Fardin Rahman's portfolio website built with Nes
 - **Blog Module**: Blog post management with slug-based routing
 - **Contact Module**: Handle contact form submissions
 - **Profile Module**: Manage profile information, skills, experience, and education
+- **Docker Support**: Containerized application with Docker and Docker Compose
+- **CI/CD Pipeline**: Automated testing, building, and deployment to Docker Hub
 
 ## Tech Stack
 
@@ -17,12 +19,45 @@ A comprehensive backend API for Fardin Rahman's portfolio website built with Nes
 - **Database**: PostgreSQL
 - **Validation**: class-validator, class-transformer
 - **API Documentation**: Swagger/OpenAPI
+- **Containerization**: Docker & Docker Compose
+- **CI/CD**: GitHub Actions
 
 ## Prerequisites
 
+### For Local Development
 - Node.js (v20+)
 - PostgreSQL (v12+)
 - npm or yarn
+
+### For Docker Development
+- Docker
+- Docker Compose
+
+## Quick Start with Docker 🐳
+
+The fastest way to get started is using Docker Compose:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd fardin-rahman-portfolio-server
+
+# Create environment file
+cp .env.example .env
+
+# Start all services (PostgreSQL + App)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+The API will be available at:
+- **API**: http://localhost:3000/api
+- **Swagger Docs**: http://localhost:3000/api/docs
+- **Health Check**: http://localhost:3000/api/health
+
+For detailed Docker setup and CI/CD documentation, see [DOCKER_SETUP.md](./DOCKER_SETUP.md)
 
 ## Installation
 
@@ -62,12 +97,30 @@ createdb portfolio_db
 
 ## Running the Application
 
-### Development mode:
+### Option 1: Using Docker Compose (Recommended)
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Rebuild after code changes
+docker-compose up -d --build
+```
+
+### Option 2: Local Development
+
+#### Development mode:
 ```bash
 npm run start:dev
 ```
 
-### Production mode:
+#### Production mode:
 ```bash
 npm run build
 npm run start:prod
@@ -75,6 +128,33 @@ npm run start:prod
 
 The API will be available at `http://localhost:3000/api`
 The Swagger documentation will be available at `http://localhost:3000/api/docs`
+
+## Docker & CI/CD
+
+This project includes:
+- **Dockerfile**: Multi-stage build for optimized production images
+- **docker-compose.yml**: Complete development environment with PostgreSQL
+- **GitHub Actions**: Automated CI/CD pipeline
+
+### CI/CD Pipeline
+
+The GitHub Actions workflow automatically:
+1. ✅ Runs tests on every push
+2. ✅ Builds Docker images
+3. ✅ Pushes to Docker Hub
+4. ✅ Tests Docker Compose setup
+
+### Docker Hub Setup
+
+To enable automatic Docker Hub publishing:
+
+1. Create a Docker Hub account at [hub.docker.com](https://hub.docker.com)
+2. Generate an access token in Docker Hub settings
+3. Add GitHub secrets to your repository:
+   - `DOCKER_USERNAME`: Your Docker Hub username
+   - `DOCKER_PASSWORD`: Your Docker Hub access token
+
+For complete Docker and CI/CD documentation, see [DOCKER_SETUP.md](./DOCKER_SETUP.md)
 
 ## API Documentation
 
@@ -119,6 +199,9 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 ## API Endpoints
+
+### Health Check
+- `GET /api/health` - Health check endpoint (public)
 
 ### Authentication
 - `POST /api/auth/register` - Register a new user
@@ -234,6 +317,63 @@ npm run build
 ```bash
 npm run format
 ```
+
+## 📚 Documentation
+
+- **[QUICKSTART.md](./QUICKSTART.md)** - Get started in 5 minutes
+- **[DOCKER_SETUP.md](./DOCKER_SETUP.md)** - Complete Docker guide
+- **[GITHUB_ACTIONS_SETUP.md](./GITHUB_ACTIONS_SETUP.md)** - CI/CD setup guide
+
+## 🐳 Docker Images
+
+After setting up CI/CD, your images will be available at:
+
+```bash
+docker pull your-username/fardin-rahman-portfolio-server:latest
+```
+
+Available tags:
+- `latest` - Latest build from main branch
+- `main` - Latest main branch build
+- `v1.0.0` - Semantic version tags
+- `main-abc123` - Specific commit builds
+
+## 🔄 CI/CD Pipeline
+
+The GitHub Actions workflow automatically:
+1. Tests the application
+2. Builds Docker images (multi-platform)
+3. Pushes to Docker Hub
+4. Tests Docker Compose setup
+
+Workflow runs on:
+- Push to `main` or `develop` branches
+- Pull requests
+- Git tags (e.g., `v1.0.0`)
+
+## 🚀 Deployment
+
+### Development
+
+```bash
+docker-compose up -d
+```
+
+### Production
+
+```bash
+# Using pre-built image from Docker Hub
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## 🔒 Security Notes
+
+- Never commit `.env` files
+- Use strong passwords in production
+- Rotate JWT secrets regularly
+- Keep Docker images updated
+- Use HTTPS in production
+- Enable Docker Hub 2FA
 
 ## License
 
