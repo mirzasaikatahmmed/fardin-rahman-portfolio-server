@@ -1,0 +1,24 @@
+fileignoreconfig:
+- filename: .env.example
+  checksum: 2bed9f20cdca27ad3cbbf1582e3f7b47887518680c969907d05259bff5e91be0
+- filename: .github/workflows/docker-ci-cd.yml
+  checksum: 6e22d76db7ff16446c53cf28ff82ae04973d813cb8802f0680be8f55338e1dc5
+- filename: README.md
+  checksum: 9b9d781c7bddebfebd6dd9f3f6f61d7452acd66171a7c760fb4b7337c9362a03
+- filename: pnpm-lock.yaml
+  checksum: eb4d55bfd79e389d6a8062902a10635f9b09ccdb95ab9f3ba36a58f3278a339e
+- filename: src/app.module.ts
+  checksum: 519ef712ee72ec0f433296ea0582e17d9fca94e72400bd600a21e3c6b7d53d88
+- filename: src/auth/auth.module.ts
+  checksum: 97660134712da26add8f0f338aef5c728b28bd34816ec7bfd3f5eacc23267532
+- filename: src/auth/decorators/public.decorator.ts
+  checksum: 7dd98abea212377901e0027f4776a04fb07a12428880cf4a9986823f24bafe26
+- filename: src/auth/decorators/roles.decorator.ts
+  checksum: 3b4768f5a71e8a1a5185c6a4f1a9f1bb437862868495df31f6e35c9bec8eec92
+- filename: src/auth/dto/login.dto.ts
+  checksum: c4890da5d791eb6fd52e223c9dfae0fe35829bdb288f49af3bdca9dcfa13be72
+- filename: src/auth/dto/register.dto.ts
+  checksum: 75f9414af6c748006053f98c49bf2a2f8fcac190a13a0d76e9e59c942255805e
+- filename: src/auth/strategies/jwt.strategy.ts
+  checksum: 7afe4e27ff5e57e7948e44bae93376ef1324b8f7d06c212bf7d9e1e9589d4f5e
+version: "1.0"

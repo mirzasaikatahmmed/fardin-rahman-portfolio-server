@@ -1,8 +1,12 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { RegisterDto } from '../auth/dto/register.dto';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "./entities/user.entity";
+import { RegisterDto } from "../auth/dto/register.dto";
 
 @Injectable()
 export class UsersService {
@@ -17,12 +21,12 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException("User with this email already exists");
     }
 
     const user = this.userRepository.create({
       ...registerDto,
-      roles: ['user'],
+      roles: ["user"],
     });
 
     return await this.userRepository.save(user);

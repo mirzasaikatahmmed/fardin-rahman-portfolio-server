@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Project } from './entities/project.entity';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Project } from "./entities/project.entity";
+import { CreateProjectDto } from "./dto/create-project.dto";
+import { UpdateProjectDto } from "./dto/update-project.dto";
 
 @Injectable()
 export class ProjectsService {
@@ -18,29 +18,34 @@ export class ProjectsService {
   }
 
   async findAll(publishedOnly: boolean = false): Promise<Project[]> {
-    const queryBuilder = this.projectRepository.createQueryBuilder('project');
-    
+    const queryBuilder = this.projectRepository.createQueryBuilder("project");
+
     if (publishedOnly) {
-      queryBuilder.where('project.isPublished = :isPublished', { isPublished: true });
+      queryBuilder.where("project.isPublished = :isPublished", {
+        isPublished: true,
+      });
     }
-    
+
     return await queryBuilder
-      .orderBy('project.order', 'ASC')
-      .addOrderBy('project.createdAt', 'DESC')
+      .orderBy("project.order", "ASC")
+      .addOrderBy("project.createdAt", "DESC")
       .getMany();
   }
 
   async findOne(id: string): Promise<Project> {
     const project = await this.projectRepository.findOne({ where: { id } });
-    
+
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
-    
+
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto,
+  ): Promise<Project> {
     const project = await this.findOne(id);
     Object.assign(project, updateProjectDto);
     return await this.projectRepository.save(project);

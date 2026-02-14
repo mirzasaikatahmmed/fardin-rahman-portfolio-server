@@ -1,30 +1,30 @@
-import { Entity, Column } from 'typeorm';
-import { BaseEntity } from '../../common/entities/base.entity';
+import { Entity, Column } from "typeorm";
+import { BaseEntity } from "../../common/entities/base.entity";
 
-@Entity('profiles')
+@Entity("profiles")
 export class Profile extends BaseEntity {
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: "varchar", length: 255 })
   fullName: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: "varchar", length: 255, nullable: true })
   title: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   bio: string;
 
-  @Column({ type: 'varchar', length: 500, nullable: true })
+  @Column({ type: "varchar", length: 500, nullable: true })
   avatar: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: "varchar", length: 255, nullable: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: "varchar", length: 255, nullable: true })
   phone: string;
 
-  @Column({ type: 'varchar', length: 500, nullable: true })
+  @Column({ type: "varchar", length: 500, nullable: true })
   location: string;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   socialLinks: {
     github?: string;
     linkedin?: string;
@@ -32,7 +32,7 @@ export class Profile extends BaseEntity {
     website?: string;
   };
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   resume: {
     url?: string;
     fileName?: string;

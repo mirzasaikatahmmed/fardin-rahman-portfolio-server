@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ContactMessage } from './entities/contact-message.entity';
-import { CreateContactMessageDto } from './dto/create-contact-message.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { ContactMessage } from "./entities/contact-message.entity";
+import { CreateContactMessageDto } from "./dto/create-contact-message.dto";
 
 @Injectable()
 export class ContactService {
@@ -11,24 +11,30 @@ export class ContactService {
     private readonly contactMessageRepository: Repository<ContactMessage>,
   ) {}
 
-  async create(createContactMessageDto: CreateContactMessageDto): Promise<ContactMessage> {
-    const message = this.contactMessageRepository.create(createContactMessageDto);
+  async create(
+    createContactMessageDto: CreateContactMessageDto,
+  ): Promise<ContactMessage> {
+    const message = this.contactMessageRepository.create(
+      createContactMessageDto,
+    );
     return await this.contactMessageRepository.save(message);
   }
 
   async findAll(): Promise<ContactMessage[]> {
     return await this.contactMessageRepository.find({
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
   }
 
   async findOne(id: string): Promise<ContactMessage> {
-    const message = await this.contactMessageRepository.findOne({ where: { id } });
-    
+    const message = await this.contactMessageRepository.findOne({
+      where: { id },
+    });
+
     if (!message) {
       throw new NotFoundException(`Contact message with ID ${id} not found`);
     }
-    
+
     return message;
   }
 
