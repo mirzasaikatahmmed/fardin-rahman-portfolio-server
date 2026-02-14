@@ -3,37 +3,45 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
 
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files and lockfile
+COPY package.json pnpm-lock.yaml ./
 
 # Install ALL dependencies (including dev dependencies needed for build)
-RUN npm ci && \
-    npm cache clean --force
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN pnpm run build
 
 # Stage 2: Production
 FROM node:20-alpine AS production
 
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files and lockfile
+COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies
-RUN npm ci && \
-    npm cache clean --force
+# Install production dependencies only
+RUN pnpm install --frozen-lockfile --prod
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
+
+# Create a non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nestjs -u 1001
 
 # Change ownership of the app directory
 RUN chown -R nestjs:nodejs /app
