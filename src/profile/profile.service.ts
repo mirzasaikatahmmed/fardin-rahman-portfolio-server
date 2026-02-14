@@ -1,14 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Profile } from './entities/profile.entity';
-import { Skill } from './entities/skill.entity';
-import { Experience } from './entities/experience.entity';
-import { Education } from './entities/education.entity';
-import { CreateProfileDto } from './dto/create-profile.dto';
-import { CreateSkillDto } from './dto/create-skill.dto';
-import { CreateExperienceDto } from './dto/create-experience.dto';
-import { CreateEducationDto } from './dto/create-education.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Profile } from "./entities/profile.entity";
+import { Skill } from "./entities/skill.entity";
+import { Experience } from "./entities/experience.entity";
+import { Education } from "./entities/education.entity";
+import { CreateProfileDto } from "./dto/create-profile.dto";
+import { CreateSkillDto } from "./dto/create-skill.dto";
+import { CreateExperienceDto } from "./dto/create-experience.dto";
+import { CreateEducationDto } from "./dto/create-education.dto";
 
 @Injectable()
 export class ProfileService {
@@ -31,17 +31,20 @@ export class ProfileService {
 
   async getProfile(): Promise<Profile | null> {
     return await this.profileRepository.findOne({
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
   }
 
-  async updateProfile(id: string, updateDto: Partial<CreateProfileDto>): Promise<Profile> {
+  async updateProfile(
+    id: string,
+    updateDto: Partial<CreateProfileDto>,
+  ): Promise<Profile> {
     const profile = await this.profileRepository.findOne({ where: { id } });
-    
+
     if (!profile) {
       throw new NotFoundException(`Profile with ID ${id} not found`);
     }
-    
+
     Object.assign(profile, updateDto);
     return await this.profileRepository.save(profile);
   }
@@ -53,29 +56,32 @@ export class ProfileService {
   }
 
   async findAllSkills(activeOnly: boolean = false): Promise<Skill[]> {
-    const queryBuilder = this.skillRepository.createQueryBuilder('skill');
-    
+    const queryBuilder = this.skillRepository.createQueryBuilder("skill");
+
     if (activeOnly) {
-      queryBuilder.where('skill.isActive = :isActive', { isActive: true });
+      queryBuilder.where("skill.isActive = :isActive", { isActive: true });
     }
-    
+
     return await queryBuilder
-      .orderBy('skill.category', 'ASC')
-      .addOrderBy('skill.order', 'ASC')
+      .orderBy("skill.category", "ASC")
+      .addOrderBy("skill.order", "ASC")
       .getMany();
   }
 
   async findSkillById(id: string): Promise<Skill> {
     const skill = await this.skillRepository.findOne({ where: { id } });
-    
+
     if (!skill) {
       throw new NotFoundException(`Skill with ID ${id} not found`);
     }
-    
+
     return skill;
   }
 
-  async updateSkill(id: string, updateDto: Partial<CreateSkillDto>): Promise<Skill> {
+  async updateSkill(
+    id: string,
+    updateDto: Partial<CreateSkillDto>,
+  ): Promise<Skill> {
     const skill = await this.findSkillById(id);
     Object.assign(skill, updateDto);
     return await this.skillRepository.save(skill);
@@ -87,28 +93,35 @@ export class ProfileService {
   }
 
   // Experience methods
-  async createExperience(createExperienceDto: CreateExperienceDto): Promise<Experience> {
+  async createExperience(
+    createExperienceDto: CreateExperienceDto,
+  ): Promise<Experience> {
     const experience = this.experienceRepository.create(createExperienceDto);
     return await this.experienceRepository.save(experience);
   }
 
   async findAllExperiences(): Promise<Experience[]> {
     return await this.experienceRepository.find({
-      order: { order: 'ASC', startDate: 'DESC' },
+      order: { order: "ASC", startDate: "DESC" },
     });
   }
 
   async findExperienceById(id: string): Promise<Experience> {
-    const experience = await this.experienceRepository.findOne({ where: { id } });
-    
+    const experience = await this.experienceRepository.findOne({
+      where: { id },
+    });
+
     if (!experience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
     }
-    
+
     return experience;
   }
 
-  async updateExperience(id: string, updateDto: Partial<CreateExperienceDto>): Promise<Experience> {
+  async updateExperience(
+    id: string,
+    updateDto: Partial<CreateExperienceDto>,
+  ): Promise<Experience> {
     const experience = await this.findExperienceById(id);
     Object.assign(experience, updateDto);
     return await this.experienceRepository.save(experience);
@@ -120,28 +133,33 @@ export class ProfileService {
   }
 
   // Education methods
-  async createEducation(createEducationDto: CreateEducationDto): Promise<Education> {
+  async createEducation(
+    createEducationDto: CreateEducationDto,
+  ): Promise<Education> {
     const education = this.educationRepository.create(createEducationDto);
     return await this.educationRepository.save(education);
   }
 
   async findAllEducations(): Promise<Education[]> {
     return await this.educationRepository.find({
-      order: { order: 'ASC', startDate: 'DESC' },
+      order: { order: "ASC", startDate: "DESC" },
     });
   }
 
   async findEducationById(id: string): Promise<Education> {
     const education = await this.educationRepository.findOne({ where: { id } });
-    
+
     if (!education) {
       throw new NotFoundException(`Education with ID ${id} not found`);
     }
-    
+
     return education;
   }
 
-  async updateEducation(id: string, updateDto: Partial<CreateEducationDto>): Promise<Education> {
+  async updateEducation(
+    id: string,
+    updateDto: Partial<CreateEducationDto>,
+  ): Promise<Education> {
     const education = await this.findEducationById(id);
     Object.assign(education, updateDto);
     return await this.educationRepository.save(education);

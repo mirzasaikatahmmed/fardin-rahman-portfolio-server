@@ -1,28 +1,28 @@
-import { Entity, Column, BeforeInsert } from 'typeorm';
-import { BaseEntity } from '../../common/entities/base.entity';
-import * as bcrypt from 'bcrypt';
+import { Entity, Column, BeforeInsert } from "typeorm";
+import { BaseEntity } from "../../common/entities/base.entity";
+import * as bcrypt from "bcrypt";
 
-@Entity('users')
+@Entity("users")
 export class User extends BaseEntity {
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: "varchar", length: 255, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: "varchar", length: 255 })
   password: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: "varchar", length: 255 })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: "varchar", length: 255 })
   lastName: string;
 
-  @Column({ type: 'varchar', length: 500, nullable: true })
+  @Column({ type: "varchar", length: 500, nullable: true })
   avatar: string;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: "boolean", default: true })
   isActive: boolean;
 
-  @Column({ type: 'simple-array', nullable: true })
+  @Column({ type: "simple-array", nullable: true })
   roles: string[];
 
   @BeforeInsert()

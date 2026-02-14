@@ -46,11 +46,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Lint
-        run: pnpm lint:check
-
-      - name: Format Check
-        run: pnpm format:check
+      - name: Run CI Check
+        run: pnpm run ci:fix
 
       - name: Build Project
         run: pnpm build
