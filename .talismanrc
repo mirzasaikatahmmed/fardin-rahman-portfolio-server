@@ -1,0 +1,8 @@
+fileignoreconfig:
+- filename: .env.example
+  checksum: 2bed9f20cdca27ad3cbbf1582e3f7b47887518680c969907d05259bff5e91be0
+- filename: .github/workflows/docker-ci-cd.yml
+  checksum: 6e22d76db7ff16446c53cf28ff82ae04973d813cb8802f0680be8f55338e1dc5
+- filename: README.md
+  checksum: 9b9d781c7bddebfebd6dd9f3f6f61d7452acd66171a7c760fb4b7337c9362a03
+version: "1.0"
