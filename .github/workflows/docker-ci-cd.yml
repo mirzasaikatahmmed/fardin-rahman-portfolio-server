@@ -3,9 +3,6 @@ name: Lint, Format, Build, Push & Deploy
 on:
   push:
     branches: [main]
-  pull_request:
-    branches:
-      - '**'
 
 env:
   DOCKER_IMAGE_NAME: fardin-rahman-portfolio-server
@@ -81,123 +78,123 @@ jobs:
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/${{ secrets.PACKAGE_NAME }}:buildcache,mode=max
           platforms: linux/amd64
 
-  deploy:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.ref == 'refs/heads/main'
+  # deploy:
+  #   name: Deploy to Production
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-push
+  #   if: github.ref == 'refs/heads/main'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Install Cloudflared
-        run: |
-          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
-          sudo dpkg -i cloudflared-linux-amd64.deb
-          cloudflared --version
+  #     - name: Install Cloudflared
+  #       run: |
+  #         wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+  #         sudo dpkg -i cloudflared-linux-amd64.deb
+  #         cloudflared --version
 
-      - name: Setup SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/server.ssh
-          chmod 600 ~/.ssh/server.ssh
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+  #     - name: Setup SSH Key
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/server.ssh
+  #         chmod 600 ~/.ssh/server.ssh
+  #         ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Setup SSH Config
-        run: |
-          cat >> ~/.ssh/config << 'EOF'
-          Host server
-              HostName ${{ secrets.VPS_HOST }}
-              User ${{ secrets.VPS_USER }}
-              ProxyCommand cloudflared access ssh --hostname ${{ secrets.VPS_HOST }}
-              IdentityFile ~/.ssh/server.ssh
-              StrictHostKeyChecking no
-              LogLevel QUIET
-              RequestTTY no
-              UserKnownHostsFile /dev/null
-          EOF
-          chmod 600 ~/.ssh/config
+  #     - name: Setup SSH Config
+  #       run: |
+  #         cat >> ~/.ssh/config << 'EOF'
+  #         Host server
+  #             HostName ${{ secrets.VPS_HOST }}
+  #             User ${{ secrets.VPS_USER }}
+  #             ProxyCommand cloudflared access ssh --hostname ${{ secrets.VPS_HOST }}
+  #             IdentityFile ~/.ssh/server.ssh
+  #             StrictHostKeyChecking no
+  #             LogLevel QUIET
+  #             RequestTTY no
+  #             UserKnownHostsFile /dev/null
+  #         EOF
+  #         chmod 600 ~/.ssh/config
 
-      - name: Test SSH Connection
-        run: ssh -q server 'echo "SSH connection successful"'
+  #     - name: Test SSH Connection
+  #       run: ssh -q server 'echo "SSH connection successful"'
 
-      - name: Docker Login on Server
-        run: ssh -q server "echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin"
+  #     - name: Docker Login on Server
+  #       run: ssh -q server "echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin"
 
-      - name: Copy Compose File
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          source: 'compose.yaml'
-          target: '/home/${{ secrets.VPS_USER }}/apps/fardin-rahman-portfolio-server'
+  #     - name: Copy Compose File
+  #       uses: appleboy/scp-action@v0.1.7
+  #       with:
+  #         host: ${{ secrets.VPS_HOST }}
+  #         username: ${{ secrets.VPS_USER }}
+  #         key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+  #         source: 'compose.yaml'
+  #         target: '/home/${{ secrets.VPS_USER }}/apps/fardin-rahman-portfolio-server'
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          script: |
-            cd ~/apps/fardin-rahman-portfolio-server
+  #     - name: Deploy via SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.VPS_HOST }}
+  #         username: ${{ secrets.VPS_USER }}
+  #         key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+  #         script: |
+  #           cd ~/apps/fardin-rahman-portfolio-server
             
-            # Check if Cloudflare tunnel is running
-            if ! systemctl is-active --quiet cloudflared; then
-              echo "⚠️  Cloudflare tunnel is not running. Starting it..."
-              sudo systemctl start cloudflared
-              sleep 5
+  #           # Check if Cloudflare tunnel is running
+  #           if ! systemctl is-active --quiet cloudflared; then
+  #             echo "⚠️  Cloudflare tunnel is not running. Starting it..."
+  #             sudo systemctl start cloudflared
+  #             sleep 5
               
-              # Verify it started successfully
-              if ! systemctl is-active --quiet cloudflared; then
-                echo "❌ Failed to start Cloudflare tunnel. Deployment aborted."
-                exit 1
-              fi
-              echo "✅ Cloudflare tunnel started successfully"
-            else
-              echo "✅ Cloudflare tunnel is already running"
-            fi
+  #             # Verify it started successfully
+  #             if ! systemctl is-active --quiet cloudflared; then
+  #               echo "❌ Failed to start Cloudflare tunnel. Deployment aborted."
+  #               exit 1
+  #             fi
+  #             echo "✅ Cloudflare tunnel started successfully"
+  #           else
+  #             echo "✅ Cloudflare tunnel is already running"
+  #           fi
             
-            # Set environment variables for docker compose
-            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            export PACKAGE_NAME=${{ secrets.PACKAGE_NAME }}
-            export PACKAGE_VERSION=${{ secrets.PACKAGE_VERSION }}
+  #           # Set environment variables for docker compose
+  #           export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+  #           export PACKAGE_NAME=${{ secrets.PACKAGE_NAME }}
+  #           export PACKAGE_VERSION=${{ secrets.PACKAGE_VERSION }}
             
-            # Pull the latest image
-            echo "📥 Pulling latest Docker image..."
-            sudo docker compose --profile prod pull
+  #           # Pull the latest image
+  #           echo "📥 Pulling latest Docker image..."
+  #           sudo docker compose --profile prod pull
             
-            # Stop and remove old containers
-            echo "🛑 Stopping old containers..."
-            sudo docker compose --profile prod down --remove-orphans
+  #           # Stop and remove old containers
+  #           echo "🛑 Stopping old containers..."
+  #           sudo docker compose --profile prod down --remove-orphans
             
-            # Start new containers
-            echo "🚀 Starting new containers..."
-            sudo docker compose --profile prod up -d
+  #           # Start new containers
+  #           echo "🚀 Starting new containers..."
+  #           sudo docker compose --profile prod up -d
             
-            # Wait for services to be healthy
-            echo "⏳ Waiting for services to be healthy..."
-            sleep 30
+  #           # Wait for services to be healthy
+  #           echo "⏳ Waiting for services to be healthy..."
+  #           sleep 30
             
-            # Check if containers are running
-            if sudo docker compose --profile prod ps | grep -q "Up"; then
-              echo "✅ Deployment successful!"
+  #           # Check if containers are running
+  #           if sudo docker compose --profile prod ps | grep -q "Up"; then
+  #             echo "✅ Deployment successful!"
               
-              # Show running containers
-              sudo docker compose --profile prod ps
+  #             # Show running containers
+  #             sudo docker compose --profile prod ps
               
-              # Clean up old images and containers
-              echo "🧹 Cleaning up..."
-              sudo docker system prune -f
-            else
-              echo "❌ Deployment failed. Containers are not running."
-              sudo docker compose --profile prod logs
-              exit 1
-            fi
+  #             # Clean up old images and containers
+  #             echo "🧹 Cleaning up..."
+  #             sudo docker system prune -f
+  #           else
+  #             echo "❌ Deployment failed. Containers are not running."
+  #             sudo docker compose --profile prod logs
+  #             exit 1
+  #           fi
