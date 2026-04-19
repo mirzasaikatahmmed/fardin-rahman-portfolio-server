@@ -28,15 +28,8 @@ lerna-debug.log*
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # Environment variables
-.env
-.env.local
 .env.*.local
 SWAGGER_SETUP.md
 AUTH_API.md
@@ -45,3 +38,7 @@ GITHUB_ACTIONS_SETUP.md
 WORKFLOW_DIAGRAM.md
 CI_CD_SUMMARY.md
 DOCKER_SETUP.md
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
+config.bat
