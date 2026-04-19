@@ -39,8 +39,9 @@ export class UploadController {
   )
   uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     if (!file) throw new BadRequestException('No file uploaded');
-    const protocol = req.protocol;
-    const host = req.get('host');
+    // X-Forwarded-Proto is set by reverse proxies (nginx/traefik) to the real protocol
+    const protocol = (req.get('x-forwarded-proto') || req.protocol).split(',')[0].trim();
+    const host = req.get('x-forwarded-host') || req.get('host');
     const url = `${protocol}://${host}/uploads/${file.filename}`;
     return { url, filename: file.filename };
   }
