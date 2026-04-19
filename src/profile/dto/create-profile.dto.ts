@@ -24,8 +24,16 @@ export class CreateProfileDto {
   title?: string;
 
   @ApiPropertyOptional({
-    description: "Biography or about section",
-    example: "Passionate developer with 5+ years of experience",
+    description: "Short description shown in hero section",
+    example: "Aspiring Industrial Production Engineer focused on smart manufacturing.",
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: "Full biography shown in about section (paragraphs separated by blank lines)",
+    example: "I am Fardin Rahman...\n\nMy academic journey...",
   })
   @IsOptional()
   @IsString()

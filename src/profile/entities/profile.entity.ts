@@ -10,6 +10,9 @@ export class Profile extends BaseEntity {
   title: string;
 
   @Column({ type: "text", nullable: true })
+  description: string;
+
+  @Column({ type: "text", nullable: true })
   bio: string;
 
   @Column({ type: "varchar", length: 500, nullable: true })
