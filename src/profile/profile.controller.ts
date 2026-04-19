@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Patch,
   Param,
@@ -15,6 +16,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from "@nestjs/swagger";
 import { ProfileService } from "./profile.service";
 import { Public } from "../auth/decorators/public.decorator";
@@ -42,6 +44,14 @@ export class ProfileController {
   @ApiResponse({ status: 200, description: "Profile found" })
   getProfile() {
     return this.profileService.getProfile();
+  }
+
+  @Put()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Create or update profile (upsert)" })
+  @ApiResponse({ status: 200, description: "Profile saved" })
+  upsertProfile(@Body() dto: Partial<CreateProfileDto>) {
+    return this.profileService.upsertProfile(dto);
   }
 
   @Patch(":id")

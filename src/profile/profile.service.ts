@@ -30,9 +30,21 @@ export class ProfileService {
   }
 
   async getProfile(): Promise<Profile | null> {
-    return await this.profileRepository.findOne({
+    const results = await this.profileRepository.find({
       order: { createdAt: "DESC" },
+      take: 1,
     });
+    return results[0] ?? null;
+  }
+
+  async upsertProfile(dto: Partial<CreateProfileDto>): Promise<Profile> {
+    const existing = await this.getProfile();
+    if (existing) {
+      Object.assign(existing, dto);
+      return await this.profileRepository.save(existing);
+    }
+    const profile = this.profileRepository.create(dto as CreateProfileDto);
+    return await this.profileRepository.save(profile);
   }
 
   async updateProfile(
@@ -42,7 +54,8 @@ export class ProfileService {
     const profile = await this.profileRepository.findOne({ where: { id } });
 
     if (!profile) {
-      throw new NotFoundException(`Profile with ID ${id} not found`);
+      // Fall back to upsert so clients with a stale/wrong ID still work
+      return await this.upsertProfile(updateDto);
     }
 
     Object.assign(profile, updateDto);
