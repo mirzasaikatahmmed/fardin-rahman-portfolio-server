@@ -9,6 +9,7 @@ import { UsersService } from "../users/users.service";
 import { LoginDto } from "./dto/login.dto";
 import { ChangeEmailDto } from "./dto/change-email.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { ChangeNameDto } from "./dto/change-name.dto";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
@@ -84,6 +85,14 @@ export class AuthService {
     await this.usersService.update(userId, { password: hashedPassword });
 
     return { message: "Password updated successfully" };
+  }
+
+  async changeName(userId: string, dto: ChangeNameDto) {
+    await this.usersService.update(userId, {
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+    });
+    return { message: "Name updated successfully" };
   }
 
   async validateUser(userId: string) {
