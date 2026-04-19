@@ -25,9 +25,11 @@ services:
     profiles:
       - prod
     ports:
-      - "${PORT:-5069}:3000"
+      - "5069:3000"
     env_file:
       - .env
+    volumes:
+      - fardin_portfolio_uploads:/app/uploads
     depends_on:
       fardin_portfolio_postgres:
         condition: service_healthy
@@ -46,3 +48,4 @@ networks:
 
 volumes:
   fardin_portfolio_postgres:
+  fardin_portfolio_uploads:
