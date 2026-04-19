@@ -19,6 +19,7 @@ import {
 import { BlogService } from "./blog.service";
 import { CreateBlogPostDto } from "./dto/create-blog-post.dto";
 import { UpdateBlogPostDto } from "./dto/update-blog-post.dto";
+import { Public } from "../auth/decorators/public.decorator";
 
 @ApiTags("blog")
 @Controller("blog")
@@ -34,6 +35,7 @@ export class BlogController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: "Get all blog posts" })
   @ApiQuery({
     name: "published",
@@ -48,6 +50,7 @@ export class BlogController {
   }
 
   @Get("slug/:slug")
+  @Public()
   @ApiOperation({ summary: "Get a blog post by slug" })
   @ApiParam({ name: "slug", description: "Blog post slug" })
   @ApiResponse({ status: 200, description: "Blog post found" })
@@ -57,6 +60,7 @@ export class BlogController {
   }
 
   @Get(":id")
+  @Public()
   @ApiOperation({ summary: "Get a blog post by ID" })
   @ApiParam({ name: "id", description: "Blog post UUID" })
   @ApiResponse({ status: 200, description: "Blog post found" })
