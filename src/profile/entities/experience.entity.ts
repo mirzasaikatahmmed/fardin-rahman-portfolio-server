@@ -15,6 +15,18 @@ export class Experience extends BaseEntity {
   @Column({ type: "varchar", length: 100, nullable: true })
   location: string;
 
+  @Column({ type: "varchar", length: 100, nullable: true })
+  employmentType: string;
+
+  @Column({ type: "varchar", length: 50, nullable: true })
+  workType: string;
+
+  @Column({ type: "varchar", length: 500, nullable: true })
+  companyLogo: string;
+
+  @Column({ type: "simple-array", nullable: true })
+  skills: string[];
+
   @Column({ type: "date", nullable: true })
   startDate: Date;
 
