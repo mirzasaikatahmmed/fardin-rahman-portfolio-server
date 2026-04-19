@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards } from "@nestjs/common";
+import { Controller, Post, Body, Get, Patch, UseGuards } from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -7,9 +7,10 @@ import {
   ApiBody,
 } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { AuthResponseDto } from "./dto/auth-response.dto";
+import { ChangeEmailDto } from "./dto/change-email.dto";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { Public } from "./decorators/public.decorator";
 import { CurrentUser } from "./decorators/current-user.decorator";
@@ -20,27 +21,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post("register")
-  @ApiOperation({ summary: "Register a new user" })
-  @ApiResponse({
-    status: 201,
-    description: "User registered successfully",
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 409, description: "User already exists" })
-  @ApiResponse({ status: 400, description: "Bad request" })
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
-  }
-
-  @Public()
   @Post("login")
-  @ApiOperation({ summary: "Login user" })
-  @ApiResponse({
-    status: 200,
-    description: "Login successful",
-    type: AuthResponseDto,
-  })
+  @ApiOperation({ summary: "Login" })
+  @ApiResponse({ status: 200, description: "Login successful", type: AuthResponseDto })
   @ApiResponse({ status: 401, description: "Invalid credentials" })
   @ApiBody({ type: LoginDto })
   async login(@Body() loginDto: LoginDto) {
@@ -51,10 +34,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("JWT-auth")
   @ApiOperation({ summary: "Get current user profile" })
-  @ApiResponse({
-    status: 200,
-    description: "User profile retrieved successfully",
-  })
+  @ApiResponse({ status: 200, description: "User profile retrieved successfully" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
   async getProfile(@CurrentUser() user: any) {
     return user;
@@ -64,12 +44,30 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth("JWT-auth")
   @ApiOperation({ summary: "Get current authenticated user" })
-  @ApiResponse({
-    status: 200,
-    description: "User information retrieved successfully",
-  })
+  @ApiResponse({ status: 200, description: "User information retrieved successfully" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
   async getMe(@CurrentUser() user: any) {
     return user;
+  }
+
+  @Patch("change-email")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("JWT-auth")
+  @ApiOperation({ summary: "Change admin email" })
+  @ApiResponse({ status: 200, description: "Email updated successfully" })
+  @ApiResponse({ status: 401, description: "Current password is incorrect" })
+  @ApiResponse({ status: 409, description: "Email already in use" })
+  async changeEmail(@CurrentUser() user: any, @Body() dto: ChangeEmailDto) {
+    return this.authService.changeEmail(user.id, dto);
+  }
+
+  @Patch("change-password")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("JWT-auth")
+  @ApiOperation({ summary: "Change admin password" })
+  @ApiResponse({ status: 200, description: "Password updated successfully" })
+  @ApiResponse({ status: 401, description: "Current password is incorrect" })
+  async changePassword(@CurrentUser() user: any, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(user.id, dto);
   }
 }
