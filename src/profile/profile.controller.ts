@@ -17,6 +17,7 @@ import {
   ApiQuery,
 } from "@nestjs/swagger";
 import { ProfileService } from "./profile.service";
+import { Public } from "../auth/decorators/public.decorator";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 import { CreateSkillDto } from "./dto/create-skill.dto";
 import { CreateExperienceDto } from "./dto/create-experience.dto";
@@ -35,6 +36,7 @@ export class ProfileController {
     return this.profileService.createProfile(createProfileDto);
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "Get profile information" })
   @ApiResponse({ status: 200, description: "Profile found" })
@@ -61,6 +63,7 @@ export class ProfileController {
     return this.profileService.createSkill(createSkillDto);
   }
 
+  @Public()
   @Get("skills")
   @ApiOperation({ summary: "Get all skills" })
   @ApiQuery({
@@ -75,6 +78,7 @@ export class ProfileController {
     return this.profileService.findAllSkills(activeOnly);
   }
 
+  @Public()
   @Get("skills/:id")
   @ApiOperation({ summary: "Get a skill by ID" })
   @ApiParam({ name: "id", description: "Skill UUID" })
@@ -110,6 +114,7 @@ export class ProfileController {
     return this.profileService.createExperience(createExperienceDto);
   }
 
+  @Public()
   @Get("experiences")
   @ApiOperation({ summary: "Get all experiences" })
   @ApiResponse({ status: 200, description: "List of experiences" })
@@ -117,6 +122,7 @@ export class ProfileController {
     return this.profileService.findAllExperiences();
   }
 
+  @Public()
   @Get("experiences/:id")
   @ApiOperation({ summary: "Get an experience by ID" })
   @ApiParam({ name: "id", description: "Experience UUID" })
@@ -152,6 +158,7 @@ export class ProfileController {
     return this.profileService.createEducation(createEducationDto);
   }
 
+  @Public()
   @Get("educations")
   @ApiOperation({ summary: "Get all educations" })
   @ApiResponse({ status: 200, description: "List of educations" })
@@ -159,6 +166,7 @@ export class ProfileController {
     return this.profileService.findAllEducations();
   }
 
+  @Public()
   @Get("educations/:id")
   @ApiOperation({ summary: "Get an education by ID" })
   @ApiParam({ name: "id", description: "Education UUID" })
