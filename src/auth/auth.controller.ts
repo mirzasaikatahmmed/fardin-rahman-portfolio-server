@@ -11,6 +11,7 @@ import { LoginDto } from "./dto/login.dto";
 import { AuthResponseDto } from "./dto/auth-response.dto";
 import { ChangeEmailDto } from "./dto/change-email.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { ChangeNameDto } from "./dto/change-name.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { Public } from "./decorators/public.decorator";
 import { CurrentUser } from "./decorators/current-user.decorator";
@@ -48,6 +49,15 @@ export class AuthController {
   @ApiResponse({ status: 401, description: "Unauthorized" })
   async getMe(@CurrentUser() user: any) {
     return user;
+  }
+
+  @Patch("change-name")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth("JWT-auth")
+  @ApiOperation({ summary: "Change admin name" })
+  @ApiResponse({ status: 200, description: "Name updated successfully" })
+  async changeName(@CurrentUser() user: any, @Body() dto: ChangeNameDto) {
+    return this.authService.changeName(user.id, dto);
   }
 
   @Patch("change-email")
