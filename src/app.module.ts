@@ -10,6 +10,9 @@ import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { HealthModule } from "./health/health.module";
 import { UploadModule } from "./upload/upload.module";
+import { ActivitiesModule } from "./activities/activities.module";
+import { Activity } from "./activities/entities/activity.entity";
+import { Visit } from "./activities/entities/visit.entity";
 import { Project } from "./projects/entities/project.entity";
 import { BlogPost } from "./blog/entities/blog-post.entity";
 import { ContactMessage } from "./contact/entities/contact-message.entity";
@@ -44,6 +47,8 @@ import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
           Experience,
           Education,
           User,
+          Activity,
+          Visit,
         ],
         synchronize: configService.get("NODE_ENV") === "development",
         logging: configService.get("NODE_ENV") === "development",
@@ -58,6 +63,7 @@ import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
     ProfileModule,
     HealthModule,
     UploadModule,
+    ActivitiesModule,
   ],
   providers: [
     {
