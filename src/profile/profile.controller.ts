@@ -9,6 +9,10 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+  Req,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -17,7 +21,13 @@ import {
   ApiParam,
   ApiQuery,
   ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
 } from "@nestjs/swagger";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from "path";
+import { Request } from "express";
 import { ProfileService } from "./profile.service";
 import { Public } from "../auth/decorators/public.decorator";
 import { CreateProfileDto } from "./dto/create-profile.dto";
@@ -52,6 +62,40 @@ export class ProfileController {
   @ApiResponse({ status: 200, description: "Profile saved" })
   upsertProfile(@Body() dto: Partial<CreateProfileDto>) {
     return this.profileService.upsertProfile(dto);
+  }
+
+  @Post("about-image")
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Upload about section image" })
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } } } })
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: diskStorage({
+        destination: "./uploads",
+        filename: (_req, file, cb) => {
+          const unique = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+          cb(null, `${unique}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (_req, file, cb) => {
+        if (!file.mimetype.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
+          return cb(new BadRequestException("Only image files are allowed"), false);
+        }
+        cb(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  async uploadAboutImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+  ) {
+    if (!file) throw new BadRequestException("No file uploaded");
+    const protocol = (req.get("x-forwarded-proto") || req.protocol).split(",")[0].trim();
+    const host = req.get("x-forwarded-host") || req.get("host");
+    const url = `${protocol}://${host}/uploads/${file.filename}`;
+    return this.profileService.upsertProfile({ aboutImage: url });
   }
 
   @Patch(":id")
