@@ -43,8 +43,9 @@ COPY --from=builder /app/dist ./dist
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001
 
-# Change ownership of the app directory
-RUN chown -R nestjs:nodejs /app
+# Create uploads directory and set ownership
+RUN mkdir -p /app/uploads && \
+    chown -R nestjs:nodejs /app
 
 # Switch to non-root user
 USER nestjs
