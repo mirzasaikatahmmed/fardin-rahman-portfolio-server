@@ -9,6 +9,7 @@ import { ProfileModule } from "./profile/profile.module";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { HealthModule } from "./health/health.module";
+import { UploadModule } from "./upload/upload.module";
 import { Project } from "./projects/entities/project.entity";
 import { BlogPost } from "./blog/entities/blog-post.entity";
 import { ContactMessage } from "./contact/entities/contact-message.entity";
@@ -56,6 +57,7 @@ import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
     ContactModule,
     ProfileModule,
     HealthModule,
+    UploadModule,
   ],
   providers: [
     {
