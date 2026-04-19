@@ -8,8 +8,6 @@ services:
       - prod
     env_file:
       - .env
-    ports:
-      - "${DB_PORT:-5432}:5432"
     volumes:
       - fardin_portfolio_postgres:/var/lib/postgresql/data
     networks:
