@@ -49,6 +49,15 @@ export class CreateProfileDto {
   avatar?: string;
 
   @ApiPropertyOptional({
+    description: "About section image URL",
+    example: "https://example.com/about-photo.jpg",
+  })
+  @IsOptional()
+  @IsUrl()
+  @MaxLength(500)
+  aboutImage?: string;
+
+  @ApiPropertyOptional({
     description: "Email address",
     example: "john.doe@example.com",
   })

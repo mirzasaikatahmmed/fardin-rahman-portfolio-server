@@ -18,6 +18,9 @@ export class Profile extends BaseEntity {
   @Column({ type: "varchar", length: 500, nullable: true })
   avatar: string;
 
+  @Column({ type: "varchar", length: 500, nullable: true })
+  aboutImage: string;
+
   @Column({ type: "varchar", length: 255, nullable: true })
   email: string;
 
