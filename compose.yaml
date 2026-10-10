@@ -10,6 +10,12 @@ services:
       PORT: "3000"
     volumes:
       - fardin_portfolio_uploads:/app/uploads
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
 
 volumes:
   fardin_portfolio_uploads:

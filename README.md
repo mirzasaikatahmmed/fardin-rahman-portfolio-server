@@ -84,6 +84,7 @@ The image is built from the `Dockerfile` in this repo (no Docker Hub image). `co
 
 ```bash
 cp .env.example .env   # fill in DB_* (remote Postgres), JWT_SECRET
+docker network create dokploy-network   # once; Dokploy already has it
 docker compose up -d --build
 docker compose logs -f fardin_portfolio_server
 ```
@@ -94,8 +95,9 @@ Because no port is published, reach the API from another container on the same c
 
 1. Create a **Compose** service from this Git repo (Compose Type: Docker Compose, path `./compose.yaml`).
 2. In **Environment**, set the variables from `.env.example` (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_REVALIDATE_URL`, `REVALIDATION_SECRET`, ...). Dokploy writes them to `.env` for the compose file.
-3. In **Domains**, add your domain for service `fardin_portfolio_server`, container port `3000`. Dokploy's Traefik routes to it; nothing is published on the host.
-4. Deploy. Uploaded files live in the named volume `fardin_portfolio_uploads`; the database lives on your remote PostgreSQL.
+3. The service joins the external `dokploy-network` (already in `compose.yaml`). That is how Traefik reaches it and how it resolves the internal host name of a Dokploy database (use the database's **Internal Host** as `DB_HOST`, port `5432`).
+4. In **Domains**, add your domain for service `fardin_portfolio_server`, container port `3000`. Dokploy's Traefik routes to it; nothing is published on the host.
+5. Deploy. Uploaded files live in the named volume `fardin_portfolio_uploads`; the database lives on your remote PostgreSQL.
 
 Production runs with TypeORM `synchronize` off, so a brand new database has no tables. Restore a `pg_dump` of the old database (it includes the schema) before using the API.
 
