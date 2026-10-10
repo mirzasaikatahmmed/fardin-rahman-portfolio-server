@@ -49,6 +49,8 @@ async function bootstrap() {
     .addTag("blog", "Blog posts management")
     .addTag("contact", "Contact messages management")
     .addTag("profile", "Profile, skills, experience, and education management")
+    .addTag("linkedin-posts", "LinkedIn posts shown on the portfolio")
+    .addTag("backup", "Database backup and restore (admin only)")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

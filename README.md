@@ -9,6 +9,9 @@ Backend API for Fardin Rahman's portfolio website built with NestJS, TypeORM, an
 - 💼 Project Showcase
 - 👤 Profile Management
 - 📧 Contact Form
+- 🔗 LinkedIn Posts (admin-managed, shown on the portfolio)
+- 💾 Database backup and restore (JSON, admin only)
+- ♻️ Automatic frontend cache refresh after admin changes
 - 🏥 Health Check Endpoint
 - 🐳 Docker Support
 - 🚀 CI/CD Pipeline
@@ -155,7 +158,9 @@ src/
 ├── blog/              # Blog management
 ├── common/            # Shared entities and utilities
 ├── contact/           # Contact form handling
+├── backup/            # Database backup and restore (JSON)
 ├── health/            # Health check endpoint
+├── linkedin-posts/    # LinkedIn posts shown on the portfolio
 ├── profile/           # User profile management
 ├── projects/          # Project showcase
 ├── users/             # User management
@@ -175,11 +180,44 @@ src/
 - `PORT` - Application port (default: 3000)
 - `NODE_ENV` - Environment (development/production)
 
+### Optional: instant frontend refresh
+
+After every create/update/delete made while logged in, the server calls the portfolio's `/api/revalidate` endpoint so changes show up immediately.
+
+- `FRONTEND_REVALIDATE_URL` - e.g. `https://www.fardinrahman.com.bd/api/revalidate`
+- `REVALIDATION_SECRET` - long random string; must match `REVALIDATION_SECRET` set on the portfolio (Vercel)
+
+If either is missing the webhook is skipped.
+
 ### Docker Variables (Production)
 
 - `DOCKER_USERNAME` - Docker Hub username
 - `PACKAGE_NAME` - Docker image name
 - `PACKAGE_VERSION` - Docker image version
+
+## Backup and Restore
+
+Both endpoints need a valid admin JWT (`Authorization: Bearer <token>`) and are also available in the admin panel under **Backup**.
+
+- `GET /api/backup` downloads `portfolio-backup-<timestamp>.json` with every table (including the `users` table with password hashes, so keep the file private). Uploaded images in `uploads/` are not included.
+- `POST /api/backup/restore` (multipart: `file` + `confirm=RESTORE`, max 50 MB) replaces ALL data with the backup. It validates the file (known tables/columns only, no raw SQL), runs in one transaction (all-or-nothing), and first saves a safety copy to `backups/pre-restore-*.json` (last 3 kept; this folder is not persistent unless you mount a volume).
+
+## LinkedIn posts table
+
+Production runs with `synchronize` off, so create the table once before deploying (Postgres 13+):
+
+```sql
+CREATE TABLE "linkedin_posts" (
+  "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+  "url" character varying(500) NOT NULL,
+  "caption" text,
+  "order" integer NOT NULL DEFAULT 0,
+  "isPublished" boolean NOT NULL DEFAULT true,
+  CONSTRAINT "PK_linkedin_posts_id" PRIMARY KEY ("id")
+);
+```
 
 ## Health Check
 
