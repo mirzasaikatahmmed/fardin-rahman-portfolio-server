@@ -78,19 +78,26 @@ The API will be available at `http://localhost:3000`
 
 ## Docker Deployment
 
-### Development
+The image is built from the `Dockerfile` in this repo (no Docker Hub image). `compose.yaml` runs Postgres and the API; no ports are published to the host, and the API listens on the default port `3000` inside its container.
+
+### Local
 
 ```bash
-docker compose --profile dev up -d
+cp .env.example .env   # fill in DB_*, JWT_SECRET
+docker compose up -d --build
+docker compose logs -f fardin_portfolio_server
 ```
 
-### Production
+Because no port is published, reach the API from another container on the same compose network, or temporarily run `docker compose exec fardin_portfolio_server wget -qO- http://localhost:3000/api/health`.
 
-Uses image from `.env`: `DOCKER_USERNAME/PACKAGE_NAME:PACKAGE_VERSION`
+### Dokploy
 
-```bash
-docker compose --profile prod up -d
-```
+1. Create a **Compose** service from this Git repo (Compose Type: Docker Compose, path `./compose.yaml`).
+2. In **Environment**, set the variables from `.env.example` (`DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_REVALIDATE_URL`, `REVALIDATION_SECRET`, ...). Dokploy writes them to `.env` for the compose file.
+3. In **Domains**, add your domain for service `fardin_portfolio_server`, container port `3000`. Dokploy's Traefik routes to it; nothing is published on the host.
+4. Deploy. The Postgres data and uploads live in the named volumes `fardin_portfolio_postgres` and `fardin_portfolio_uploads`.
+
+Production runs with TypeORM `synchronize` off, so a brand new database has no tables. Restore a `pg_dump` of the old database (it includes the schema) before using the API.
 
 ## Available Scripts
 
@@ -115,40 +122,12 @@ The project uses GitHub Actions for continuous integration and deployment:
 
 ### Workflow Stages
 
-1. **Lint, Format, Build** (All branches)
+1. **Lint, Format, Build** (pushes and PRs)
    - Code linting with ESLint
    - Format checking with Prettier
    - Build verification
 
-2. **Build and Push Docker Image** (main branch only)
-   - Build Docker image
-   - Push to Docker Hub
-
-3. **Deploy to Production** (main branch only)
-   - Copy compose.yaml to server
-   - Check Cloudflare tunnel status
-   - Pull latest Docker image
-   - Deploy with zero downtime
-
-### Required GitHub Secrets
-
-Configure these secrets in your GitHub repository:
-
-- `DOCKER_USERNAME` - Docker Hub username
-- `DOCKER_PASSWORD` - Docker Hub password/token
-- `PACKAGE_NAME` - Docker package name (e.g., fardin-rahman-portfolio-server)
-- `PACKAGE_VERSION` - Docker image version tag (e.g., latest)
-- `VPS_HOST` - SSH host (e.g., ssh.saikat.com.bd)
-- `VPS_USER` - SSH username (e.g., saikat)
-- `VPS_SSH_PRIVATE_KEY` - SSH private key for authentication
-
-### Deployment Path
-
-The application is deployed to: `/home/saikat/apps/fardin-rahman-portfolio-server`
-
-### Cloudflare Tunnel
-
-The deployment script automatically checks if the Cloudflare tunnel service is running and starts it if needed. Make sure `cloudflared` is configured as a systemd service on your server.
+Deployment is done by Dokploy from the Git repo (it builds the `Dockerfile` itself), so the workflow no longer pushes an image to Docker Hub or deploys over SSH.
 
 ## Project Structure
 
@@ -188,12 +167,6 @@ After every create/update/delete made while logged in, the server calls the port
 - `REVALIDATION_SECRET` - long random string; must match `REVALIDATION_SECRET` set on the portfolio (Vercel)
 
 If either is missing the webhook is skipped.
-
-### Docker Variables (Production)
-
-- `DOCKER_USERNAME` - Docker Hub username
-- `PACKAGE_NAME` - Docker image name
-- `PACKAGE_VERSION` - Docker image version
 
 ## Backup and Restore
 
