@@ -78,12 +78,12 @@ The API will be available at `http://localhost:3000`
 
 ## Docker Deployment
 
-The image is built from the `Dockerfile` in this repo (no Docker Hub image). `compose.yaml` runs Postgres and the API; no ports are published to the host, and the API listens on the default port `3000` inside its container.
+The image is built from the `Dockerfile` in this repo (no Docker Hub image). `compose.yaml` runs only the API and connects to an external (remote) PostgreSQL configured through `DB_*`; no ports are published to the host, and the API listens on the default port `3000` inside its container.
 
 ### Local
 
 ```bash
-cp .env.example .env   # fill in DB_*, JWT_SECRET
+cp .env.example .env   # fill in DB_* (remote Postgres), JWT_SECRET
 docker compose up -d --build
 docker compose logs -f fardin_portfolio_server
 ```
@@ -93,9 +93,9 @@ Because no port is published, reach the API from another container on the same c
 ### Dokploy
 
 1. Create a **Compose** service from this Git repo (Compose Type: Docker Compose, path `./compose.yaml`).
-2. In **Environment**, set the variables from `.env.example` (`DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_REVALIDATE_URL`, `REVALIDATION_SECRET`, ...). Dokploy writes them to `.env` for the compose file.
+2. In **Environment**, set the variables from `.env.example` (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_REVALIDATE_URL`, `REVALIDATION_SECRET`, ...). Dokploy writes them to `.env` for the compose file.
 3. In **Domains**, add your domain for service `fardin_portfolio_server`, container port `3000`. Dokploy's Traefik routes to it; nothing is published on the host.
-4. Deploy. The Postgres data and uploads live in the named volumes `fardin_portfolio_postgres` and `fardin_portfolio_uploads`.
+4. Deploy. Uploaded files live in the named volume `fardin_portfolio_uploads`; the database lives on your remote PostgreSQL.
 
 Production runs with TypeORM `synchronize` off, so a brand new database has no tables. Restore a `pg_dump` of the old database (it includes the schema) before using the API.
 

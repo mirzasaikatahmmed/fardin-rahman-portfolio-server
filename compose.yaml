@@ -1,19 +1,4 @@
 services:
-  fardin_portfolio_postgres:
-    image: postgres:15-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE}
-    volumes:
-      - fardin_portfolio_postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   fardin_portfolio_server:
     build:
       context: .
@@ -22,15 +7,9 @@ services:
     env_file:
       - .env
     environment:
-      DB_HOST: fardin_portfolio_postgres
-      DB_PORT: "5432"
       PORT: "3000"
     volumes:
       - fardin_portfolio_uploads:/app/uploads
-    depends_on:
-      fardin_portfolio_postgres:
-        condition: service_healthy
 
 volumes:
-  fardin_portfolio_postgres:
   fardin_portfolio_uploads:
