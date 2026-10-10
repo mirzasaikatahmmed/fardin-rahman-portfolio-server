@@ -43,3 +43,6 @@ temp_interactive_push.bat
 .gitignore
 config.bat
 branch_structure.json
+
+# Safety backups written before a database restore
+backups
