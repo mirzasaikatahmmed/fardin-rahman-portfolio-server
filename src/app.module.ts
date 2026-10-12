@@ -12,8 +12,10 @@ import { HealthModule } from "./health/health.module";
 import { UploadModule } from "./upload/upload.module";
 import { ActivitiesModule } from "./activities/activities.module";
 import { LinkedInPostsModule } from "./linkedin-posts/linkedin-posts.module";
+import { SectionVisibilityModule } from "./section-visibility/section-visibility.module";
 import { BackupModule } from "./backup/backup.module";
 import { LinkedInPost } from "./linkedin-posts/entities/linkedin-post.entity";
+import { SectionVisibility } from "./section-visibility/entities/section-visibility.entity";
 import { Activity } from "./activities/entities/activity.entity";
 import { Visit } from "./activities/entities/visit.entity";
 import { Project } from "./projects/entities/project.entity";
@@ -54,6 +56,7 @@ import { RevalidateInterceptor } from "./common/interceptors/revalidate.intercep
           Activity,
           Visit,
           LinkedInPost,
+          SectionVisibility,
         ],
         synchronize: configService.get("NODE_ENV") === "development",
         logging: configService.get("NODE_ENV") === "development",
@@ -70,6 +73,7 @@ import { RevalidateInterceptor } from "./common/interceptors/revalidate.intercep
     UploadModule,
     ActivitiesModule,
     LinkedInPostsModule,
+    SectionVisibilityModule,
     BackupModule,
   ],
   providers: [

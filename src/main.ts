@@ -50,6 +50,7 @@ async function bootstrap() {
     .addTag("contact", "Contact messages management")
     .addTag("profile", "Profile, skills, experience, and education management")
     .addTag("linkedin-posts", "LinkedIn posts shown on the portfolio")
+    .addTag("section-visibility", "Homepage section visibility toggles")
     .addTag("backup", "Database backup and restore (admin only)")
     .build();
 

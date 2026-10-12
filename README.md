@@ -194,6 +194,22 @@ CREATE TABLE "linkedin_posts" (
 );
 ```
 
+## Section visibility table
+
+Homepage section visibility (which of the 10 sections are shown) is stored in a single row. Production runs with `synchronize` off, so create the table once before deploying (Postgres 13+):
+
+```sql
+CREATE TABLE "section_visibility" (
+  "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+  "sections" jsonb NOT NULL DEFAULT '{}'::jsonb,
+  CONSTRAINT "PK_section_visibility_id" PRIMARY KEY ("id")
+);
+```
+
+`GET /api/section-visibility` is public and returns the map (all sections default to visible when no row exists). `PUT /api/section-visibility` requires an admin JWT.
+
 ## Health Check
 
 The application includes a health check endpoint:
